@@ -18,11 +18,10 @@ import com.wangyu.factory.service.DepartmentService;
 import com.wangyu.factory.service.FactoryService;
 import com.wangyu.factory.service.ProductService;
 import com.wangyu.factory.service.WorkerService;
+import com.wangyu.factory.utils.ResultUtils;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -69,7 +68,7 @@ public class ApplicationDelegate extends Application {
         String[] workerNames = {"张三", "李四", "王五", "赵六", "毛了个先", "毛主席", "党中央", "红太阳", "经理"};
         // 随机产生工人
         Arrays.stream(workerNames).forEach(workerName ->
-                workerService.birth(workerName, randomSkill(productNames))
+                workerService.birth(workerName, ResultUtils.randomSubarray(productNames))
         );
         // 1. 创建工厂
         Factory factory = factoryService.createFactory("太原化工厂");
@@ -91,7 +90,7 @@ public class ApplicationDelegate extends Application {
         // 4. 入职完毕，开始干活
         workers.forEach(worker -> {
             // 随机产量
-            for (int i = 0; i < RandomUtils.nextInt(0,7); i++) {
+            for (int i = 0; i < RandomUtils.nextInt(0, 7); i++) {
                 workerService.produce(worker);
             }
         });
@@ -114,21 +113,4 @@ public class ApplicationDelegate extends Application {
         System.exit(0);
     }
 
-    /**
-     * 随机取出若干个值
-     *
-     * @param productNames
-     * @return
-     */
-    private String[] randomSkill(String[] productNames) {
-        int length = productNames.length;
-        int args1 = RandomUtils.nextInt(0, length);
-        int args2 = RandomUtils.nextInt(0, length);
-        int start = NumberUtils.min(args1, args2);
-        int end = NumberUtils.max(args1, args2);
-        if (end == start && end == length) {
-            start--;
-        }
-        return ArrayUtils.subarray(productNames, start, end);
-    }
 }
