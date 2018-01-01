@@ -18,6 +18,8 @@ import com.wangyu.factory.model.Department;
 import com.wangyu.factory.model.Factory;
 import com.wangyu.factory.model.Product;
 import com.wangyu.factory.model.Worker;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -27,6 +29,8 @@ import java.util.List;
  */
 @Service
 public class FactoryService {
+
+    private static final Logger logger = LogManager.getLogger();
 
     @Resource
     private FactoryDAO factoryDAO;
@@ -47,7 +51,7 @@ public class FactoryService {
      */
     public Factory createFactory(String factoryName) {
         Factory factory = Factory.create(factoryName);
-        System.out.println("【工厂创建】" + factoryName + "创建了");
+        logger.info("【工厂创建】" + factoryName + "创建了");
         return factoryDAO.insert(factory);
     }
 
@@ -61,18 +65,18 @@ public class FactoryService {
     public Department createDepartment(Factory factory, String name, Integer type) {
         Department department = Department.create(name, type);
         department.setFactoryId(factory.getObjectId());
-        System.out.println("【部门创建】" + name + "由工厂：" + factory.getName() + "创建了");
+        logger.info("【部门创建】" + name + "由工厂：" + factory.getName() + "创建了");
         return departmentDAO.insert(department);
     }
 
     public Department cancelDepartment(Factory factory, Department department) {
-        System.out.println("【解散部门】工厂：" + factory.getName() + "解散了部门" + department.getName());
+        logger.info("【解散部门】工厂：" + factory.getName() + "解散了部门" + department.getName());
         department.setStatus(Department.Status.DESTROY);
         return departmentDAO.update(department);
     }
 
     public Product destroyProduct(Product product) {
-        System.out.println("【摧毁产品】摧毁不合格品" + product.getName());
+        logger.info("【摧毁产品】摧毁不合格品" + product.getName());
         product.setStatus(Product.Status.DESTROYED);
         return productDAO.update(product);
     }
@@ -83,7 +87,7 @@ public class FactoryService {
      * @param department 部门
      */
     public void punish(Department qualifyDepartment, Department department) {
-        System.out.println("【检查结果】" + department.getName() + "检验不合格！开始惩罚！");
+        logger.info("【检查结果】" + department.getName() + "检验不合格！开始惩罚！");
         // 摧毁不合格产品
         productService.findByDepartment(department)
                 .stream().filter(product -> !product.isQuality())

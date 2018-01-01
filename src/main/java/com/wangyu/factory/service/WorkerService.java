@@ -18,6 +18,8 @@ import com.wangyu.factory.model.Product;
 import com.wangyu.factory.model.Worker;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -27,6 +29,8 @@ import java.util.List;
  */
 @Service
 public class WorkerService {
+
+    private static final Logger logger = LogManager.getLogger();
 
     @Resource
     private WorkerDAO workerDAO;
@@ -46,8 +50,8 @@ public class WorkerService {
 
     public List<Worker> findAll() {
         List<Worker> workers = workerDAO.selectByFilter(new Worker());
-        System.out.println("找到了一批工人：");
-        workers.forEach(System.out::println);
+        logger.info("找到了一批工人：");
+        workers.forEach(logger::info);
         return workers;
     }
 
@@ -79,7 +83,7 @@ public class WorkerService {
             Product product = Product.create(name);
             product.setProducer(worker.getObjectId());
             product.setQuality(quality);
-            System.out.println("【工人生产】--" + worker.getName() + "生产了产品:" + name + "质量：" + (quality ? "合格" : "不合格"));
+            logger.info("【工人生产】--" + worker.getName() + "生产了产品:" + name + "质量：" + (quality ? "合格" : "不合格"));
             return productDAO.insert(product);
         }
         return null;

@@ -23,12 +23,16 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
 
 public class ApplicationDelegate extends Application {
+
+    private static final Logger logger = LogManager.getLogger();
 
     public static void main(String[] args) {
         launch(args);
@@ -101,11 +105,11 @@ public class ApplicationDelegate extends Application {
             factoryService.punish(qualifyDepartment, department2);
         }
         // 查完了，看看多少人失业了
-        System.out.println("【失业的工人】：");
-        workerService.findFired().forEach(System.out::println);
+        logger.info("【失业的工人】：");
+        workerService.findFired().forEach(logger::info);
         // 看看总共多少产品废了
-        System.out.println("【废掉的产品】：");
-        productService.findDestroyed().forEach(System.out::println);
+        logger.info("【废掉的产品】：");
+        productService.findDestroyed().forEach(logger::info);
         // 执行完了关了吧
         System.exit(0);
     }

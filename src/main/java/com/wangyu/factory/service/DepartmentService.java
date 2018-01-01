@@ -16,6 +16,8 @@ import com.wangyu.factory.model.Department;
 import com.wangyu.factory.model.Product;
 import com.wangyu.factory.model.Worker;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -25,6 +27,8 @@ import java.util.List;
  */
 @Service
 public class DepartmentService {
+
+    private static final Logger logger = LogManager.getLogger();
 
     @Resource
     private WorkerDAO workerDAO;
@@ -43,7 +47,7 @@ public class DepartmentService {
         worker.setStatus(Worker.Status.NORMAL);
         worker.setDepartmentId(department.getObjectId());
         worker.setFactoryId(department.getFactoryId());
-        System.out.println("【工人入职】" + worker.getName() + "入职" + department.getName() + "部门！");
+        logger.info("【工人入职】" + worker.getName() + "入职" + department.getName() + "部门！");
         workerDAO.update(worker);
     }
 
@@ -54,7 +58,7 @@ public class DepartmentService {
      * @param worker
      */
     public void fireWorker(Department department, Worker worker) {
-        System.out.println("【解雇工人】质监部门" + department.getName() + "解雇了" + worker.getName());
+        logger.info("【解雇工人】质监部门" + department.getName() + "解雇了" + worker.getName());
         worker.setStatus(Worker.Status.FIRED);
         workerDAO.update(worker);
     }
@@ -75,14 +79,14 @@ public class DepartmentService {
      */
     public boolean qualify(Department department, Department targetDepartment) {
         if (department.getType() == Department.Type.QUALITY) {
-            System.out.println("【质监部门】质监部门：" + department.getName() + "正在检查" + targetDepartment.getName() + "部门");
+            logger.info("【质监部门】质监部门：" + department.getName() + "正在检查" + targetDepartment.getName() + "部门");
             // 检查的话，就是检查合格个数
             List<Product> products = productService.findByDepartment(targetDepartment);
             // 产品不为空时，找，否则没产品，直接就算通过了，然后才检测个数
             boolean result = CollectionUtils.isEmpty(products) ||
                     products.stream().filter(product -> !product.isQuality()).count() < 5;
             if (result) {
-                System.out.println("【质监部门】" + targetDepartment.getName() + "检验通过！");
+                logger.info("【质监部门】" + targetDepartment.getName() + "检验通过！");
             }
             return result;
         } else {
